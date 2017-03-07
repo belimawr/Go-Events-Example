@@ -1,0 +1,3 @@
+package: github.com/experiments/Go-Events-Example
+import:
+- package: github.com/GuiaBolso/Go-Events
