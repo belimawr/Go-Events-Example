@@ -74,7 +74,6 @@ func Listar(texto io.Reader, consulta string) map[string]string {
 		}
 		runa, nome, palavrasNome := AnalisarLinha(linha) // ➊
 		if contémTodos(palavrasNome, termos) {           // ➋
-			log.Printf("U+%04X\t%[1]c\t%s\n", runa, nome)
 			k := fmt.Sprintf("U+%04X", runa)
 			v := fmt.Sprintf("%c\t%s", runa, nome)
 			output[k] = v
@@ -85,7 +84,7 @@ func Listar(texto io.Reader, consulta string) map[string]string {
 
 func check(e error) {
 	if e != nil {
-		panic(e)
+		log.Println(e)
 	}
 }
 
