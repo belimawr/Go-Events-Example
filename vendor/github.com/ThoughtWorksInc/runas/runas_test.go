@@ -122,58 +122,57 @@ func TestSeparar(t *testing.T) {
 	}
 }
 
-func ExampleListar() {
+func TestListar(t *testing.T) {
 	texto := strings.NewReader(linhas3Da43)
-	Listar(texto, "MARK")
+	m := Listar(texto, "MARK")
+
+	if len(m) != 1 {
+		t.Error("Esperando 1 runa")
+	}
+
+	for k := range m {
+		if k != "U+003F" {
+			t.Errorf("Não esperava a runa %q", k)
+		}
+	}
 	// Output: U+003F	?	QUESTION MARK
 }
 
-func ExampleListar_doisResultados() {
+func TestListar_doisResultados(t *testing.T) {
 	texto := strings.NewReader(linhas3Da43)
-	Listar(texto, "SIGN")
+	m := Listar(texto, "SIGN")
+
+	if len(m) != 2 {
+		t.Error("Esperando 2 runas")
+	}
+
+	for k := range m {
+		if !(k == "U+003D" || k == "U+003E") {
+			t.Errorf("Não esperava a runa %q", k)
+		}
+	}
 	// Output:
 	// U+003D	=	EQUALS SIGN
 	// U+003E	>	GREATER-THAN SIGN
 }
 
-func ExampleListar_duasPalavras() {
+func TestListar_duasPalavras(t *testing.T) {
 	texto := strings.NewReader(linhas3Da43)
-	Listar(texto, "CAPITAL LATIN")
+	m := Listar(texto, "CAPITAL LATIN")
+
+	if len(m) != 3 {
+		t.Error("Esperando 3 runas")
+	}
+
+	for k := range m {
+		if !(k == "U+0041" || k == "U+0042" || k == "U+0043") {
+			t.Errorf("Não esperava a runa %q", k)
+		}
+	}
 	// Output:
 	// U+0041	A	LATIN CAPITAL LETTER A
 	// U+0042	B	LATIN CAPITAL LETTER B
 	// U+0043	C	LATIN CAPITAL LETTER C
-}
-
-func Example() {
-	argsAntes := os.Args
-	defer func() { os.Args = argsAntes }()
-	os.Args = []string{"", "cruzeiro"}
-	main()
-	// Output:
-	// U+20A2	₢	CRUZEIRO SIGN
-}
-
-func Example_consultaDuasPalavras() { // ➊
-	argsAntes := os.Args // ➋
-	defer func() { os.Args = argsAntes }()
-	os.Args = []string{"", "cat", "smiling"}
-	main() // ➌
-	// Output:
-	// U+1F638	😸	GRINNING CAT FACE WITH SMILING EYES
-	// U+1F63A	😺	SMILING CAT FACE WITH OPEN MOUTH
-	// U+1F63B	😻	SMILING CAT FACE WITH HEART-SHAPED EYES
-}
-
-func Example_consultaComHífenECampo10() {
-	argsAntes := os.Args
-	defer func() { os.Args = argsAntes }()
-	os.Args = []string{"", "quote"}
-	main()
-	// Output:
-	// U+0027	'	APOSTROPHE (APOSTROPHE-QUOTE)
-	// U+2358	⍘	APL FUNCTIONAL SYMBOL QUOTE UNDERBAR
-	// U+235E	⍞	APL FUNCTIONAL SYMBOL QUOTE QUAD
 }
 
 func restaurar(nomeVar, valor string, existia bool) {
@@ -189,9 +188,9 @@ func TestObterCaminhoUCD_setado(t *testing.T) {
 	defer restaurar("UCD_PATH", caminhoAntes, existia)
 	caminhoUCD := fmt.Sprintf("./TEST%d-UnicodeData.txt", time.Now().UnixNano())
 	os.Setenv("UCD_PATH", caminhoUCD)
-	obtido := obterCaminhoUCD()
+	obtido := ObterCaminhoUCD()
 	if obtido != caminhoUCD {
-		t.Errorf("obterCaminhoUCD() [setado]\nesperado: %q; recebido: %q", caminhoUCD, obtido)
+		t.Errorf("ObterCaminhoUCD() [setado]\nesperado: %q; recebido: %q", caminhoUCD, obtido)
 	}
 }
 
@@ -200,9 +199,9 @@ func TestObterCaminhoUCD_default(t *testing.T) {
 	defer restaurar("UCD_PATH", caminhoAntes, existia)
 	os.Unsetenv("UCD_PATH")
 	sufixoCaminhoUCD := "/UnicodeData.txt"
-	obtido := obterCaminhoUCD()
+	obtido := ObterCaminhoUCD()
 	if !strings.HasSuffix(obtido, sufixoCaminhoUCD) {
-		t.Errorf("obterCaminhoUCD() [default]\nesperado (sufixo): %q; recebido: %q", sufixoCaminhoUCD, obtido)
+		t.Errorf("ObterCaminhoUCD() [default]\nesperado (sufixo): %q; recebido: %q", sufixoCaminhoUCD, obtido)
 	}
 }
 
@@ -226,8 +225,8 @@ func TestBaixarUCD(t *testing.T) {
 }
 
 func TestAbrirUCD_local(t *testing.T) {
-	caminhoUCD := obterCaminhoUCD()
-	ucd, err := abrirUCD(caminhoUCD)
+	caminhoUCD := ObterCaminhoUCD()
+	ucd, err := AbrirUCD(caminhoUCD)
 	if err != nil {
 		t.Errorf("AbrirUCD(%q):\n%v", caminhoUCD, err)
 	}
@@ -239,7 +238,7 @@ func TestAbrirUCD_remoto(t *testing.T) {
 		t.Skip("teste ignorado [opção -test.short]")
 	}
 	caminhoUCD := fmt.Sprintf("./TEST%d-UnicodeData.txt", time.Now().UnixNano())
-	ucd, err := abrirUCD(caminhoUCD)
+	ucd, err := AbrirUCD(caminhoUCD)
 	if err != nil {
 		t.Errorf("AbrirUCD(%q):\n%v", caminhoUCD, err)
 	}
