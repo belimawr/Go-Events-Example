@@ -40,21 +40,22 @@ type RunaHandler struct {
 // Serve - Event Handler for "RuneFinder" event
 func (h RunaHandler) Serve(ctx context.Context, event events.Event) (events.Event, error) {
 	payload := struct {
-		Consulta string `json:"consulta"`
+		Key string `json:"key"`
 	}{}
 
 	if err := json.Unmarshal(event.Payload, &payload); err != nil {
+		log.Println(err)
 		return events.NewError(event.FlowID, err.Error()), err
 	}
 
 	ucd, err := runas.AbrirUCD(h.Path)
 	if err != nil {
-		log.Fatal(err.Error())
+		log.Println(err.Error())
 	}
 
 	defer ucd.Close()
 
-	consulta := payload.Consulta
+	consulta := payload.Key
 	output := runas.Listar(ucd, strings.ToUpper(consulta))
 
 	return events.NewResponse(event, output)
