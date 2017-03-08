@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	events "github.com/GuiaBolso/Go-Events"
-	"github.com/ThoughtWorksInc/runas"
 	"github.com/belimawr/Go-Events-Example/handlers"
 )
 
@@ -15,7 +14,7 @@ func main() {
 	eventsMux.Add("UpperCase", 1, handlers.UpperCaseHandler{})
 
 	eventsMux.Add("RuneFinder", 1, handlers.RunaHandler{
-		Path: runas.ObterCaminhoUCD(),
+		Path: "./UCD.db",
 	})
 
 	http.Handle("/events/", eventsMux)
